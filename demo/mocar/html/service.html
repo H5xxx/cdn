@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="viewport" content="minimal-ui,width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>选择车型</title>
+    <link rel="stylesheet" href="../css/service.css">
+    <script src="../js/lib/template.js"></script>
+    <script src="../js/lib/sea.js"></script>
+    <script src="../js/lib/zepto.js"></script>
+    <script src="../js/lib/spine.js"></script>
+
+    <script id="template-brand-item" type="text/html">
+        <div class="crumble">品牌</div>
+            <div class="j-brand-list">
+            {{each data as value i}}
+                <div class="brand-item" data-id="{{value.brand_id}}" data-brand="{{value.brand_name}}">
+                    <img src="{{value.logo_img_url}}" alt="">
+                    <span>{{value.brand_name}}</span>
+                </div>
+            {{/each}}
+        </div>
+    </script>
+    <script id="template-series-item" type="text/html">
+        <div class="crumble">{{brand_name}} >> 车系</div>
+        <div class="j-series-list">
+        {{each data as value i}}
+            <div class="series-item" data-id="{{value.series_id}}" data-name="{{value.series_name}}">
+                <span>{{value.series_name}}</span>
+            </div>
+        {{/each}}
+        </div>
+    </script>
+    <script id="template-model-item" type="text/html">
+        <div class="crumble">audi >>  {{series_name}} >> 年款</div>
+        <div class="j-model-list">
+        {{each data as value i}}
+            <div class="model-item" data-id="{{value.models_id}}">
+                <img src="{{value.models_img_url}}" alt="">
+                <span>{{value.description}}</span>
+            </div>
+        {{/each}}
+        </div>
+    </script>
+    <script id="template-displacement-item" type="text/html">
+        <div class="crumble">audi >>  {{series_name}} >> 年款 >> 排量</div>
+        <div class="j-displacement-list">
+        {{each data as value i}}
+            <div class="displacement-item" data-id="{{value.displacement_id}}">
+                <span>{{value.displacement_name}}</span>
+            </div>
+        {{/each}}
+        </div>
+    </script>
+</head>
+<body>
+    <div class="crumble">
+        <span class="dn" id="crumble-brand">品牌</span>
+        <span class="dn" id="crumble-series">车系</span>
+        <span class="dn" id="crumble-model">年款</span>
+        <span class="dn" id="crumble-displacement">排量</span>
+    </div>
+    <div id='car-brand'>
+        <div class="j-brand-container">
+        </div>
+    </div>
+    <div id='car-series'>
+        <div class="j-series-container">
+        </div>
+    </div>
+    <div id='car-model'>
+        <div class="j-model-container">
+        </div>
+    </div>
+    <div id='car-displacement'>
+        <div class="j-displacement-container">
+        </div>
+    </div>
+    <script>
+    seajs.use("../js/page/service");
+    </script>
+
+</body>
+
+</html>
