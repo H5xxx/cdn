@@ -1,30 +1,27 @@
 define(function(require, exports) {
-    var Transitions = require('../component/transitions');
+    var Brand = require('../model/brand');
+    var Series = require('../model/series');
     var Model = require('../model/model');
+    var Displacement = require('../model/displacement');
 
-    var CarDisplacement = Spine.Controller.create({
-        elements: {
-            '.j-displacement-container': 'displacementContainer'
-        },
-        events: {
-            'click .displacement-item': 'enterModel'
-        },
-        init: function() {},
-        showDisplacement: function(id) {
-            var displacements = Model.getDisplacementById(id);
-            var html = template('template-displacement-item', {
-                data: displacements
+    var CarDisplacement = require('./common').sub({
+        el: $('#car-displacement'),
+
+        template: 'template-displacement',
+
+        getData: function(params, callback){
+            Displacement.fetch(params, function(err, data){
+                data = $.extend(
+                    data,
+                    Brand.find(params.brand_id),
+                    Series.find(params.series_id),
+                    Model.find(params.model_id)
+                );
+
+                callback(null, data);
             });
-            this.displacementContainer.html(html);
-            this.active();
-        },
-        activate: Transitions.fadein,
-        deactivate: Transitions.fadeout
+        }
     });
-    var carDisplacement = new CarDisplacement({
-        el: $('#car-displacement')
-    });
-    var sm = require('../component/state-machine');
-    sm.add(carDisplacement);
-    return carDisplacement;
+
+    return CarDisplacement;
 });

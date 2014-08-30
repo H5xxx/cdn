@@ -1,57 +1,15 @@
 define(function(require, exports) {
-    var Transitions = require('../component/transitions');
     var Brand = require('../model/brand');
 
-    var CarBrand = Spine.Controller.create({
-        elements: {
-            '.j-brand-container': 'brandContainer'
-        },
-        events: {
-            'click .brand-item': 'enterSeries'
-        },
-        init: function() {
-            $.ajax({
-                url: 'http://cybwx.sinaapp.com/service.php',
-                data: {
-                    m: 'getCarBrandFast'
-                },
-                dataType: 'jsonp',
-                jsonp: 'callback',
-                success: this.proxy(function(data) {
-                    data = data.data;
-                    console.log(data);
-                    var brand;
-                    for (var i = 0; i < data.length; i++) {
-                        brand = Brand.create(data[i]);
-                    }
-                    this.proxy(this.showBrand());
-                }),
-                error: function() {
-                    alert('getCarBrandFast 超时');
-                }
-            });
-        },
-        showBrand: function() {
-            var html = template('template-brand-item', {
-                data: Brand.all()
-            });
-            this.brandContainer.html(html);
-            this.active();
-        },
-        enterSeries: function(e) {
-            var id = e.currentTarget.dataset.id;
-            // var brand = e.currentTarget.dataset.brand;
-            var carSeries = require('./car-series');
-            carSeries.showSeries(id);
-        },
-        activate: Transitions.fadein,
-        deactivate: Transitions.fadeout
+    var CarBrand = require('./common').sub({
+        el: $('#car-brand'),
+
+        template: 'template-brand',
+
+        getData: function(params, callback){
+            Brand.fetch(params, callback);
+        }
     });
 
-    var carBrand = new CarBrand({
-        el: $('#car-brand')
-    });
-    var sm = require('../component/state-machine');
-    sm.add(carBrand);
-    return carBrand;
+    return CarBrand;
 });

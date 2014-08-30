@@ -1,59 +1,20 @@
 define(function(require, exports) {
-    var Transitions = require('../component/transitions');
+    var Brand = require('../model/brand');
+    var Series = require('../model/series');
     var Model = require('../model/model');
 
-    var CarModel = Spine.Controller.create({
-        elements: {
-            '.j-model-container': 'modelContainer'
-        },
+    var CarModel = require('./common').sub({
+        el: $('#car-model'),
 
-        events: {
-            'click .model-item': 'enterDisplacement'
-        },
-        init: function() {},
-        showModel: function(series_id, series_name) {
-            // http://cybwx.sinaapp.com/service.php?m=getCarModelsFast&series_id=12
-            $.ajax({
-                url: 'http://cybwx.sinaapp.com/service.php',
-                data: {
-                    m: 'getCarModelsFast',
-                    series_id: series_id
-                },
-                dataType: 'jsonp',
-                jsonp: 'callback',
-                success: this.proxy(function(data) {
-                    data = data.data;
-                    console.log(data);
-                    var model;
-                    for (var i = 0; i < data.length; i++) {
-                        model = Model.create(data[i]);
-                    }
-                    // this.proxy(this.showModel());
-                    var html = template('template-model-item', {
-                        series_name: series_name,
-                        data: Model.all()
-                    });
-                    this.modelContainer.html(html);
-                    this.active();
+        template: 'template-model',
 
-                }),
-                error: function() {
-                    alert('getCarModelFast 超时');
-                }
+        getData: function(params, callback){
+            Model.fetch(params, function(err, data){
+                data = $.extend(data, Brand.find(params.brand_id), Series.find(params.series_id));
+                callback(null, data);
             });
-        },
-        enterDisplacement: function(e) {
-            var id = e.currentTarget.dataset.id;
-            var carDisplacement = require('./car-displacement');
-            carDisplacement.showDisplacement(id);
-        },
-        activate: Transitions.fadein,
-        deactivate: Transitions.fadeout
+        }
     });
-    var carModel = new CarModel({
-        el: $('#car-model')
-    });
-    var sm = require('../component/state-machine');
-    sm.add(carModel);
-    return carModel;
+
+    return CarModel;
 });
