@@ -3,11 +3,15 @@
  */
 
 define(function(require, exports) {
+    var util = require('../component/util');
     var Transitions = require('../component/transitions');
 
     var Common = Spine.Controller.sub({
         // 该controller要渲染&控制的区域
         el: $(),
+
+        // 页面title
+        title: '',
 
         // 内容模板
         template: 'template-...',
@@ -39,7 +43,11 @@ define(function(require, exports) {
 
             var me = this;
 
+            util.title(this.title);
+
             this.fadein();
+
+            params = params || {};
 
             this.getData(params, function(err, data){
 

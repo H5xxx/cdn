@@ -1,15 +1,31 @@
+/*
+ * 选择车系
+ */
 define(function(require, exports) {
+    var util = require('../component/util');
+
     var Brand = require('../model/brand');
     var Series = require('../model/series');
 
     var CarSeries = require('./common').sub({
         el: $('#car-series'),
 
+        title: '选择车系',
+
         template: 'template-series',
 
         getData: function(params, callback){
-            Series.fetch(params, function(err, data){
-                data = $.extend(data, Brand.find(params.brand_id));
+            util.finish([
+                Series.fetch(params),
+                Brand.fetch(params)
+            ], function(list){
+                data = $.extend(
+                    {
+                        list: list
+                    },
+                    Brand.find(params.brand_id)
+                );
+
                 callback(null, data);
             });
         }
