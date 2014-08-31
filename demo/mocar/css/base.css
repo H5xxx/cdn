@@ -8,7 +8,7 @@ html, body {
     margin: 0 auto;
 }
 .page-container {
-    padding-bottom: 50px;
+    height: 100%;
 }
 .fl {
     float: left;
@@ -57,12 +57,18 @@ select {
 .mt40px {
     margin-top: 40px;
 }
+.mt50px {
+    margin-top: 50px;
+}
 .mt60px {
     margin-top: 60px;
 }
 .ml130px {
     margin-left: 130px;
     display: block;
+}
+.mb50px {
+    margin-bottom: 50px;
 }
 .pr10px {
     padding-right: 10px;
@@ -75,15 +81,40 @@ select {
 }
 /* 公共header、footer样式 */
 
-.header, .footer {
-    background-color: #333333;
-    color: #EAEAEA;
+.header {
+    position: fixed;
+    top: 0;
+    z-index: 5;
+    width: 100%;
+    height: 45px;
+    line-height: 45px;
+    padding-left: 20px;
+    color: #60C900;
+    font-size: 16px;
+    background: #fff;
+}
+.main {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 4;
+    width: 100%;
 }
 .footer {
     position: fixed;
     bottom: 0;
-    height: 50px;
+    z-index: 5;
     width: 100%;
+    height: 50px;
+    background-color: #333333;
+    color: #EAEAEA;
+}
+.btw-header-main {
+    position: fixed;
+    top: 45px;
+    width: 100%;
+    height: 5px;
+    background: -webkit-linear-gradient(top, #ccc, #f8f8f8);
 }
 .footer .content-area {
     margin-left: 30px;
@@ -91,13 +122,14 @@ select {
 /*遮罩层*/
 
 .overlayer {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     opacity: 0.3;
     background: rgb(0, 0, 0);
+    z-index: 10;
 }
 /*弹出层wrapper,帮助定位*/
 
@@ -108,6 +140,7 @@ select {
     bottom: 0;
     left: 0;
     text-align: center;
+    z-index: 10;
 }
 .popup-wrapper:after {
     content: " ";

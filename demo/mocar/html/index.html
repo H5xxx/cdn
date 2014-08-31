@@ -11,6 +11,7 @@
     <link rel='stylesheet' href='../css/cart.css'>
     <link rel='stylesheet' href='../css/schedule.css'>
     <link rel='stylesheet' href='../css/success.css'>
+    <script src="../js/lib/iScroll-v4.2.5.js"></script>
     <script src="../js/lib/template.js"></script>
     <script src="../js/lib/sea.js"></script>
     <script src="../js/lib/zepto.js"></script>
@@ -46,7 +47,7 @@
         </div>
     </script>
     <script id="template-navigator" type="text/html">
-        <div class="crumble">
+        <div class="header">
             {{if brand_id}}
                 <span class="j-nav" data-nav="/service/{{service_id}}/brand">{{brand}}</span>
                 {{if series_id}}
@@ -64,14 +65,16 @@
                 <span class="j-nav" data-nav="/service/{{service_id}}/brand">品牌</span>
             {{/if}}
         </div>
+        <div class="btw-header-main"></div>
     </script>
 
     <script id="template-brand" type="text/html">
-        <div class="j-brand-container">
-            {{include 'template-navigator'}}
+        {{include 'template-navigator'}}
+        <div class="main mt50px" id="j-brand-container">
             <div class="j-brand-list">
                 {{each list as item i}}
                     <div class="brand-item j-nav" data-nav="/service/{{service_id}}/brand/{{item.id}}/series">
+                        <img src="item.img">
                         <span>{{item.brand}}</span>
                     </div>
                 {{/each}}
@@ -80,8 +83,8 @@
     </script>
 
     <script id="template-series" type="text/html">
-        <div class="j-series-container">
-            {{include 'template-navigator'}}
+        {{include 'template-navigator'}}
+        <div class="main mt50px" id="j-series-container">
             <div class="j-series-list">
                 {{each list as item i}}
                     <div class="series-item j-nav" data-nav="/service/{{service_id}}/brand/{{brand_id}}/series/{{item.id}}/model">
@@ -93,8 +96,8 @@
     </script>
 
     <script id="template-model" type="text/html">
-        <div class="j-model-container">
-            {{include 'template-navigator'}}
+        {{include 'template-navigator'}}
+        <div class="main mt50px" id="j-model-container">
             <div class="j-model-list">
                 {{each list as item i}}
                     <div class="model-item j-nav" data-nav="/service/{{service_id}}/model/{{item.id}}/cart">
@@ -105,18 +108,6 @@
         </div>
     </script>
 
-    <script id="template-displacement" type="text/html">
-        <div class="j-displacement-container">
-            {{include 'template-navigator'}}
-            <div class="j-displacement-list">
-            {{each list as item i}}
-                <div class="displacement-item j-nav" data-nav="/service/{{service_id}}/brand/{{brand_id}}/series/{{series_id}}/model/{{model_id}}/displacement/{{item.displacement_id}}/service">
-                    <span>{{item.displacement}}</span>
-                </div>
-            {{/each}}
-            </div>
-        </div>
-    </script>
     <!-- -->
     <script id="template-buyelsetip" type="text/html">
         <div class="buyelse-popup mocar-tip-popup">
@@ -134,7 +125,7 @@
     </script>
     <!-- 选择服务类型 与 配件 页面 模板 -->
     <script id="template-cart" type="text/html">
-        <div class="j-cart-container">
+        <div class="main mb50px" id="j-cart-container">
             <div id='accessories-info'>
                 <div id='car-info' class='mt20px'>
                     <i class='site-icons icon-car'></i>
@@ -154,8 +145,8 @@
                         <p class="accessory info">服务项目</p>
                         <div class="select-wrapper">
                             <div class='custom-select-trigger'>
-                                <span class='product-name'>{{name}}</span>
-                                <span class='price' data-price='{{price}}'>{{price}}元</span>    
+                                <span class='product-name'>{{currentService.name}}</span>
+                                <span class='price' data-price='{{currentService.price}}'>{{currentService.price}}元</span>    
                             </div>
                             <input type="text" name="serviceInput" style="display:none">
                         </div>
@@ -165,7 +156,7 @@
                     <i class='site-icons icon-accessory'></i>
                     <div class='content-area'>
                         <ul>
-                        {{each parts as part i}}
+                        {{each currentService.parts as part i}}
                             <li class='form-row' data-part-seq="{{i}}">
                                 <p class="accessory info">
                                     {{part.name}} {{part.quantity}} {{part.unit}}
@@ -183,14 +174,15 @@
                     </div>
                 </div>
             </div>
-            <div class='footer'>
-                <a href="javascript:void(0);" class="j-nav" data-nav="/service/{{service_id}}/model/{{model_id}}/schedule">
-                    <i class='site-icons icon-nextstep'></i>
-                </a>
-                <div class='content-area justify-wrap'>
-                    <span class='tip justify-content'>总价：<span data-totalprice='{{price}}'>{{price}}</span>元</span>
-                </div> 
-            </div>
+        </div>
+
+        <div class='footer'>
+            <a href="javascript:void(0);" class="j-nav j-nextstep" data-nav="/service/{{service_id}}/model/{{model_id}}/schedule">
+                <i class='site-icons icon-nextstep'></i>
+            </a>
+            <div class='content-area justify-wrap'>
+                <span class='tip justify-content'>总价：<span data-totalprice='{{price}}'>{{currentService.price}}</span>元</span>
+            </div> 
         </div>
     </script>
     <!-- 预约上门信息 页面 模板 -->
@@ -220,7 +212,7 @@
                 </div>
                 <div id='detailAddress' class='hight110px'>
                     <div class='content-area border-bottom'>
-                        <input type="text" name='addressInput' id='addressInput' placeholder='输入详细地址' value="{{address}}">
+                        <input type="text" name='addressInput' id='addressInput' placeholder='输入详细地址' value="{{address}}" required>
                     </div>
                 </div>
                 <div id='scheduleTime' class='hight110px'>
@@ -229,7 +221,7 @@
                         <span class='first border-bottom'>
                             <div class="select-wrapper">
                                 <div class='custom-select-trigger'>
-                                    <span class='product-name'>2014-07-22</span>  
+                                    <span class='product-name'>{{currentDay}}</span>  
                                 </div>
                                 <input type="text" name="dayInput" style="display:none">
                             </div>
@@ -237,7 +229,7 @@
                         <span class='second border-bottom'>
                             <div class="select-wrapper">
                                 <div class='custom-select-trigger'>
-                                    <span class='product-name'>13:00</span>  
+                                    <span class='product-name'>{{currentTime}}</span>  
                                 </div>
                                 <input type="text" name="timeInput" style="display:none">
                             </div>
@@ -256,31 +248,31 @@
                 <div id='name' class='hight110px'>
                     <i class="site-icons icon-user"></i>
                     <div class='content-area border-bottom'>
-                        <input type="text" placeholder='姓名' id='nameInput' name='nameInput' value="{{name}}">
+                        <input type="text" placeholder='姓名' id='nameInput' name='nameInput' value="{{name}}" required>
                     </div>
                 </div>
                 <div id='phoneNumber' class='hight110px'>
                     <i class="site-icons icon-phone"></i>
                     <div class='content-area border-bottom'>
-                        <input type="tel" placeholder='手机号码' id='phoneInput' name='phoneInput' value="{{phone}}">
+                        <input type="tel" placeholder='手机号码' id='phoneInput' name='phoneInput' value="{{phone}}" required>
                     </div>
                 </div>
             </div>
             <div class='footer'>
-                <a href="javascript:void(0);" class="j-nav" data-nav="/service/2/model/1/success">
+                <a href="javascript:void(0);" class="j-nav j-nextstep" data-nav="/service/{{service_id}}/model/{{model_id}}/success">
                     <i class='site-icons icon-success'></i>
                 </a>
                 <div class='content-area justify-wrap'>
-                    <span class='tip justify-content'>总价：<span>667</span>元</span>
+                    <span class='tip justify-content'>总价：<span>{{sum}}</span>元</span>
                 </div> 
             </div>
         </div>
     </script>
     <!-- 预约成功 页面 模板 -->
     <script id="template-success" type="text/html">
-        <div class="j-success-container">
+        <div class="main mb50px" id="j-success-container">
             <div id='schedule-success'>
-                <div id='success-tip' class='header'>
+                <div id='success-tip' class='success-header'>
                     <i class='site-icons icon-success'></i>
                     <div class='content-area'>
                         <div class='justify'>
@@ -292,10 +284,12 @@
                     <i class='site-icons icon-car'></i>
                     <div class='content-area form-row'>
                         <div class='justify'>
-                            <span class="brand info">奥迪</span>
-                            <span class='model info'>国产A4</span>
+                            <span class="brand info">{{currentVehicle.model}}</span>
+                    <!--    <span class='model info'>国产A4</span>
                             <span class="displacement info">1.8T</span>
-                            <span class='carNo info last'>NB520Z</span>
+                    
+                            <span class='carNo info last'>{{currentVehicle.plate}}</span>
+                    -->
                         </div>
                     </div>
                 </div>
@@ -303,8 +297,8 @@
                     <i class='site-icons icon-service'></i>
 
                     <div class='content-area form-row'>
-                        <span class="brand info">摩卡汽车保养服务</span>
-                        <span class='carNo info last'>160元</span>
+                        <span class="brand info">{{currentService.name}}</span>
+                        <span class='carNo info last'>{{currentService.price}}元</span>
                     </div>
                 </div>
                 <div id='service-detail' class=''>
@@ -312,60 +306,62 @@
 
                     <div class='content-area'>
                         <ul>
+                        {{each currentService.parts as part i }}
                             <li class='form-row'>
-                                <p class="accessory info">机油</p>
-                                <span class='model info'>嘉实多磁护SN级5w-40</span>
-                                <span class='carNo info last'>260元</span>
+                                <p class="accessory info">{{part.name}} {{part.quantity}} {{part.unit}}</p>
+                                {{each part.options as option j}}
+                                    {{if (option.id == currentOrder.services[0].parts[i].id)
+}}
+                                        <span class='model info'>{{option.brand}}{{option.name}} {{option.extra}}</span>
+                                        <span class='carNo info last'>
+                                            {{if (option.price == 0 && option.extra)}}
+                                                {{option.extra}}
+                                            {{else}}
+                                                {{option.price}}
+                                            {{/if}}
+                                        元</span>
+                                    {{/if}}
+                                {{/each}}
                             </li>
-                            <li class='form-row'>
-                                <p class="accessory info">机滤</p>
-                                <span class='model info'>曼牌 W 940/25</span>
-                                <span class='carNo info last'>NB520Z</span>
-                            </li>
-                            <li class='form-row'>
-                                <p class="accessory info">空气过滤器</p>
-                                <span class='model info'>曼牌 C27 192/1</span>
-                                <span class='carNo info last'>NB520Z</span>
-                            </li>
+                        {{/each}}
                         </ul>
                     </div>
                 </div>
                 <div id='address-info' class=''>
                     <i class='site-icons icon-location'></i>
                     <div class='content-area form-row pr10px'>
-                            <span class='city info'>北京市</span>
-                            <span class='district info'>海淀区</span>
+                            <span class='city info'>{{currentOrder.province}}</span>
+                            <span class='district info'>{{currentOrder.city}}</span>
                             <span class='district info'>
-                                西二旗西路领秀新硅谷D区54号101
+                                {{currentOrder.address}}
                             </span>
                     </div>
                 </div>
                 <div id='schedule-info' class=''>
                     <i class='site-icons icon-time'></i>
                     <div class='content-area form-row'>
-                            <span class='day info'>2014-07-22</span>
-                            <span class='time info last'>13:00</span>
+                            <span class='day info'>{{currentOrder.day}}</span>
+                            <span class='time info last'>{{currentOrder.time}}</span>
                     </div>
                 </div>
                 
             </div>
-            <div class='footer'>
-                <a href="javascript:void(0);" class="j-nav" data-nav="/home">
-                    <i class='site-icons icon-home'></i>
-                </a>
-                <div class='content-area justify-wrap'>
-                    <span class='tip justify-content'>总价：<span>667</span>元</span>
-                </div> 
-            </div>
+        </div>
+        <div class='footer'>
+            <a href="javascript:void(0);" class="j-nav" data-nav="/home">
+                <i class='site-icons icon-home'></i>
+            </a>
+            <div class='content-area justify-wrap'>
+                <span class='tip justify-content'>总价：<span>{{currentOrder.sum}}</span>元</span>
+            </div> 
         </div>
     </script>
-
 </head>
+
 <body>
 
     <!-- main-container是所有内容的容器，保持在页面中居中，通过控制main-container的宽度可以实现响应式 -->
     <div id="main-container" class="main-container">
-
         <div class="page-container" id='car-home'></div>
         <div class="page-container" id='car-brand'></div>
         <div class="page-container" id='car-series'></div>
@@ -373,19 +369,15 @@
         <div class="page-container" id='car-cart'></div>
         <div class="page-container" id='car-schedule'></div>
         <div class="page-container" id='car-success'></div>
-
     </div>
 
     <script>
-
     seajs.config({
-      alias: {
-        "mock": "../js/lib/mock.js"
-      }
+        alias: {
+            "mock": "../js/lib/mock.js"
+        }
     })
-    seajs.use('../js/mockAjax', function () {
-        
-    });
+    seajs.use('../js/mockAjax', function() {});
 
     seajs.use("../js/page/index");
     </script>
